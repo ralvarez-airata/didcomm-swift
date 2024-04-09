@@ -21,15 +21,9 @@ struct Routing {
     
     struct DIDCommService {
         
-        struct ServiceEndpoint {
-            let uri: String
-            let accept: [String]
-            let routingKeys: [String]
-        }
-        
         let id: String
         let type: String
-        let serviceEndpoint: [ServiceEndpoint]
+        let serviceEndpoint: String
     }
     
     let didResolver: DIDResolver

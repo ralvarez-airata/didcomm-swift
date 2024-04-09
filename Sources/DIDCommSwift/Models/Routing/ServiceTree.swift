@@ -62,7 +62,7 @@ private func buildBranchsTree(
     
     let document = try await didResolver.resolve(did: didUrl.did)
     let routingTo = try getRoutingURIAndKeys(document: document)
-    
+    /*
     try await routingTo.asyncForEach {
         let nextDID = DIDUrl(from: $0.uri)?.did
         guard nextDID != nil || !$0.keys.isEmpty else {
@@ -84,25 +84,23 @@ private func buildBranchsTree(
                 parentNode: newNode
             )
         }
-    }
+    }*/
 }
 
-private func getRoutingURIAndKeys(document: DIDDocument) throws -> [(uri: String, keys: [String])] {
+private func getRoutingURIAndKeys(document: DIDDocument) throws -> String {
     try document.services?
         .first { $0.type.contains("DIDCommMessaging") }
         .map {
             try $0.toDIDCommService().serviceEndpoint
-                .map { ($0.uri, $0.routingKeys) }
-        } ?? []
+        } ?? ""
 }
 
-private func getRoutingKeys(document: DIDDocument) throws -> [String] {
+private func getRoutingKeys(document: DIDDocument) throws -> String {
     try document.services?
         .first { $0.type.contains("DIDCommMessaging") }
         .flatMap {
             try $0.toDIDCommService().serviceEndpoint
-                .flatMap(\.routingKeys)
-        } ?? []
+        } ?? ""
 }
 
 private extension DIDDocument.Service {
@@ -110,7 +108,13 @@ private extension DIDDocument.Service {
         guard self.type == didcommServiceType else {
             throw DIDCommError.notDidCommServiceType
         }
-        switch self.serviceEndpoint.value {
+        return .init(
+            id: self.id,
+            type: self.type,
+            serviceEndpoint: ""
+        )
+        /*
+        switch self.serviceEndpoint {
         case let value as String:
             return .init(
                 id: self.id,
@@ -161,9 +165,10 @@ private extension DIDDocument.Service {
             return .init(
                 id: self.id,
                 type: self.type,
-                serviceEndpoint: []
+                serviceEndpoint: self.serviceEndpoint
             )
         }
+         */
     }
 }
 
